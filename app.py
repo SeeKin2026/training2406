@@ -2,136 +2,103 @@ import streamlit as st
 import random
 
 st.set_page_config(
-    page_title="Grammar Heroes!",
-    page_icon="🌟",
-    layout="centered"
+    page_title="🚀 Grammar Space Invaders",
+    page_icon="👾",
+    layout="wide"
 )
 
-# ---------------- QUESTIONS ----------------
+# ------------------ QUESTIONS ------------------
 
 QUESTIONS = [
-    {
-        "sentence": "The cat ____ on the sofa.",
-        "options": ["sit", "sits"],
-        "answer": "sits",
-        "explanation": "One cat = singular, so we add 's' to the verb."
-    },
 
-    {
-        "sentence": "The dogs ____ in the park.",
-        "options": ["runs", "run"],
-        "answer": "run",
-        "explanation": "More than one dog = plural, so we use 'run'."
-    },
+    {"sentence":"The cat ____ on the sofa.",
+     "correct":"sits",
+     "wrong":"sit",
+     "explanation":"One cat = singular, so we add s."},
 
-    {
-        "sentence": "My brother ____ soccer every day.",
-        "options": ["play", "plays"],
-        "answer": "plays",
-        "explanation": "One brother = singular, so we use 'plays'."
-    },
+    {"sentence":"The dogs ____ in the park.",
+     "correct":"run",
+     "wrong":"runs",
+     "explanation":"Many dogs = plural, so we do not add s."},
 
-    {
-        "sentence": "The birds ____ in the sky.",
-        "options": ["fly", "flies"],
-        "answer": "fly",
-        "explanation": "Many birds = plural, so we use 'fly'."
-    },
+    {"sentence":"My sister ____ every morning.",
+     "correct":"runs",
+     "wrong":"run",
+     "explanation":"One sister = singular, so we use runs."},
 
-    {
-        "sentence": "The teacher ____ a story.",
-        "options": ["tell", "tells"],
-        "answer": "tells",
-        "explanation": "One teacher = singular, so we use 'tells'."
-    },
+    {"sentence":"The birds ____ in the sky.",
+     "correct":"fly",
+     "wrong":"flies",
+     "explanation":"Many birds = plural, so we use fly."},
 
-    {
-        "sentence": "The monkeys ____ bananas.",
-        "options": ["likes", "like"],
-        "answer": "like",
-        "explanation": "Many monkeys = plural, so we use 'like'."
-    },
+    {"sentence":"Dad ____ coffee.",
+     "correct":"drinks",
+     "wrong":"drink",
+     "explanation":"One dad = singular, so we use drinks."},
 
-    {
-        "sentence": "Dad ____ coffee every morning.",
-        "options": ["drink", "drinks"],
-        "answer": "drinks",
-        "explanation": "One dad = singular, so we use 'drinks'."
-    },
+    {"sentence":"The children ____ to school.",
+     "correct":"walk",
+     "wrong":"walks",
+     "explanation":"Children means many people, so we use walk."},
 
-    {
-        "sentence": "The children ____ to school.",
-        "options": ["walk", "walks"],
-        "answer": "walk",
-        "explanation": "Children means many people, so we use 'walk'."
-    },
+    {"sentence":"The monkey ____ bananas.",
+     "correct":"likes",
+     "wrong":"like",
+     "explanation":"One monkey = singular, so we use likes."},
 
-    {
-        "sentence": "The fish ____ in the pond.",
-        "options": ["swim", "swims"],
-        "answer": "swim",
-        "explanation": "Fish here means many fish, so we use 'swim'."
-    },
-
-    {
-        "sentence": "My sister ____ very fast.",
-        "options": ["run", "runs"],
-        "answer": "runs",
-        "explanation": "One sister = singular, so we use 'runs'."
-    }
+    {"sentence":"The fish ____ together.",
+     "correct":"swim",
+     "wrong":"swims",
+     "explanation":"Many fish = plural, so we use swim."}
 ]
 
-# ---------------- SESSION STATE ----------------
+# ------------------ SESSION STATE ------------------
 
 if "score" not in st.session_state:
     st.session_state.score = 0
 
-if "question_number" not in st.session_state:
-    st.session_state.question_number = 1
+if "health" not in st.session_state:
+    st.session_state.health = 3
 
-if "current_question" not in st.session_state:
-    st.session_state.current_question = random.choice(QUESTIONS)
+if "level" not in st.session_state:
+    st.session_state.level = 1
+
+if "question" not in st.session_state:
+    st.session_state.question = random.choice(QUESTIONS)
+
+if "feedback" not in st.session_state:
+    st.session_state.feedback = ""
 
 if "answered" not in st.session_state:
     st.session_state.answered = False
 
-if "result" not in st.session_state:
-    st.session_state.result = None
-
-# ---------------- STYLING ----------------
+# ------------------ STYLING ------------------
 
 st.markdown("""
 <style>
 
 .stApp{
-background: linear-gradient(180deg,#8be9fd,#ffd166);
+background:linear-gradient(180deg,#020024,#090979,#00d4ff);
 }
 
-.title{
+.bigtitle{
 text-align:center;
-font-size:45px;
+font-size:50px;
 font-weight:bold;
-color:#ff006e;
+color:#FFD700;
 }
 
-.subtitle{
-text-align:center;
-font-size:22px;
-color:#073b4c;
-}
-
-.score-box{
-background:#06d6a0;
+.panel{
+background:#14213d;
 padding:15px;
 border-radius:20px;
-text-align:center;
-font-size:28px;
-font-weight:bold;
 color:white;
+font-size:24px;
+text-align:center;
 }
 
-.question-box{
-background:white;
+.question{
+background:#ffffff;
 padding:25px;
 border-radius:20px;
 font-size:30px;
@@ -139,150 +106,208 @@ font-weight:bold;
 text-align:center;
 }
 
-.big-feedback{
-font-size:28px;
-font-weight:bold;
-text-align:center;
-}
-
-.explanation{
+.feedback{
 background:#fff3cd;
 padding:15px;
 border-radius:15px;
-font-size:20px;
+font-size:22px;
+}
+
+.alien{
+font-size:90px;
+text-align:center;
+}
+
+.ship{
+font-size:100px;
+text-align:center;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- HEADER ----------------
-
-st.markdown('<div class="title">🌟 Grammar Heroes 🌟</div>',
-            unsafe_allow_html=True)
+# ------------------ HEADER ------------------
 
 st.markdown(
-    '<div class="subtitle">Choose the correct verb and become a Grammar Superhero!</div>',
-    unsafe_allow_html=True
+'<div class="bigtitle">🚀 Grammar Space Invaders 👾</div>',
+unsafe_allow_html=True
 )
 
 st.write("")
 
-st.markdown(
-    f'<div class="score-box">🏆 Score: {st.session_state.score}</div>',
+col1,col2,col3=st.columns(3)
+
+with col1:
+    st.markdown(
+    f'<div class="panel">⭐ Score<br>{st.session_state.score}</div>',
     unsafe_allow_html=True
-)
+    )
+
+with col2:
+    st.markdown(
+    f'<div class="panel">❤️ Health<br>{st.session_state.health}</div>',
+    unsafe_allow_html=True
+    )
+
+with col3:
+    st.markdown(
+    f'<div class="panel">🏆 Level<br>{st.session_state.level}</div>',
+    unsafe_allow_html=True
+    )
 
 st.write("")
 
-# ---------------- QUESTION ----------------
+# ------------------ GAME OVER ------------------
 
-q = st.session_state.current_question
+if st.session_state.health <= 0:
 
-st.markdown(
-    f'<div class="question-box">Question {st.session_state.question_number}<br><br>{q["sentence"]}</div>',
-    unsafe_allow_html=True
-)
+    st.error("👾 GAME OVER!")
 
-st.write("")
+    st.subheader(f"Final Score: {st.session_state.score}")
 
-choice = st.radio(
-    "👇 Pick your answer:",
-    q["options"],
-    key=f"radio_{st.session_state.question_number}"
-)
+    if st.button("🔄 Play Again"):
 
-# ---------------- SUBMIT ----------------
-
-if not st.session_state.answered:
-
-    if st.button("🚀 Check My Answer", use_container_width=True):
-
-        st.session_state.answered = True
-
-        if choice == q["answer"]:
-            st.session_state.score += 10
-            st.session_state.result = True
-        else:
-            st.session_state.result = False
+        st.session_state.score=0
+        st.session_state.health=3
+        st.session_state.level=1
+        st.session_state.question=random.choice(QUESTIONS)
+        st.session_state.feedback=""
+        st.session_state.answered=False
 
         st.rerun()
 
-# ---------------- FEEDBACK ----------------
+    st.stop()
+
+# ------------------ ALIEN ------------------
+
+st.markdown(
+'<div class="alien">👾</div>',
+unsafe_allow_html=True
+)
+
+q=st.session_state.question
+
+st.markdown(
+f'<div class="question">{q["sentence"]}</div>',
+unsafe_allow_html=True
+)
+
+st.write("")
+
+answers=[q["correct"],q["wrong"]]
+
+random.shuffle(answers)
+
+left,right=st.columns(2)
+
+# ------------------ SHOOT BUTTONS ------------------
+
+if not st.session_state.answered:
+
+    with left:
+
+        if st.button(f"🔫 Shoot {answers[0]}",
+                     use_container_width=True):
+
+            selected=answers[0]
+
+            st.session_state.answered=True
+
+            if selected==q["correct"]:
+
+                st.session_state.score +=10
+
+                st.session_state.feedback=(
+                    f"🎉 Alien destroyed!\n\n💡 {q['explanation']}"
+                )
+
+            else:
+
+                st.session_state.health -=1
+
+                st.session_state.feedback=(
+                    f"😃 Oops!\n\nCorrect answer: {q['correct']}\n\n💡 {q['explanation']}"
+                )
+
+            st.rerun()
+
+    with right:
+
+        if st.button(f"🔫 Shoot {answers[1]}",
+                     use_container_width=True):
+
+            selected=answers[1]
+
+            st.session_state.answered=True
+
+            if selected==q["correct"]:
+
+                st.session_state.score +=10
+
+                st.session_state.feedback=(
+                    f"🎉 Alien destroyed!\n\n💡 {q['explanation']}"
+                )
+
+            else:
+
+                st.session_state.health -=1
+
+                st.session_state.feedback=(
+                    f"😃 Oops!\n\nCorrect answer: {q['correct']}\n\n💡 {q['explanation']}"
+                )
+
+            st.rerun()
+
+# ------------------ FEEDBACK ------------------
 
 if st.session_state.answered:
 
-    if st.session_state.result:
+    st.markdown(
+    f'<div class="feedback">{st.session_state.feedback}</div>',
+    unsafe_allow_html=True
+    )
 
+    if st.session_state.score > 0 and st.session_state.score % 30 == 0:
+        st.session_state.level += 1
         st.balloons()
-
-        st.markdown(
-            '<div class="big-feedback">🎉 Correct! Amazing job!</div>',
-            unsafe_allow_html=True
-        )
-
-    else:
-
-        st.markdown(
-            '<div class="big-feedback">😃 Nice try!</div>',
-            unsafe_allow_html=True
-        )
-
-        st.write(
-            f"✅ The correct answer is: **{q['answer']}**"
-        )
 
     st.write("")
 
     st.markdown(
-        f'<div class="explanation">💡 {q["explanation"]}</div>',
-        unsafe_allow_html=True
+    '<div class="ship">🚀</div>',
+    unsafe_allow_html=True
     )
 
-    st.write("")
+    if st.button("➡️ Next Alien"):
 
-    if st.session_state.score >= 80:
-        st.success("🏅 WOW! You are a Grammar Master!")
+        st.session_state.question=random.choice(QUESTIONS)
 
-    elif st.session_state.score >= 50:
-        st.success("🌈 Great work! Keep going!")
+        st.session_state.feedback=""
 
-    elif st.session_state.score >= 20:
-        st.success("⭐ You're getting stronger!")
-
-    st.write("")
-
-    if st.button("➡️ Next Question", use_container_width=True):
-
-        st.session_state.question_number += 1
-        st.session_state.current_question = random.choice(QUESTIONS)
-        st.session_state.answered = False
-        st.session_state.result = None
+        st.session_state.answered=False
 
         st.rerun()
 
-# ---------------- FOOTER ----------------
+# ------------------ INSTRUCTIONS ------------------
 
-st.write("")
 st.write("---")
 
 st.info("""
-🦸 Grammar Tip:
 
-Singular (1 person, animal or thing)
-👉 usually uses verbs ending with **s**
+🎮 HOW TO PLAY
 
-Examples:
+👾 Aliens are attacking Earth.
 
-🐱 The cat sits.
+🚀 Read the sentence.
 
-👦 Ben runs.
+🔫 Shoot the correct verb.
 
-Plural (2 or more)
-👉 usually uses verbs without **s**
+⭐ Correct answer = +10 points
 
-Examples:
+❤️ Wrong answer = lose 1 health
 
-🐶 The dogs run.
+🏆 Every 30 points = Level Up
 
-👧👦 The children walk.
+Destroy as many aliens as you can!
+
 """)
