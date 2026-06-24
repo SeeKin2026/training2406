@@ -1,313 +1,394 @@
 import streamlit as st
-import random
+import streamlit.components.v1 as components
 
 st.set_page_config(
-    page_title="🚀 Grammar Space Invaders",
-    page_icon="👾",
+    page_title="Grammar Space Invaders",
+    page_icon="🚀",
     layout="wide"
 )
 
-# ------------------ QUESTIONS ------------------
+st.title("🚀 Grammar Space Invaders")
 
-QUESTIONS = [
+html_code = """
 
-    {"sentence":"The cat ____ on the sofa.",
-     "correct":"sits",
-     "wrong":"sit",
-     "explanation":"One cat = singular, so we add s."},
+<!DOCTYPE html>
 
-    {"sentence":"The dogs ____ in the park.",
-     "correct":"run",
-     "wrong":"runs",
-     "explanation":"Many dogs = plural, so we do not add s."},
+<html>
 
-    {"sentence":"My sister ____ every morning.",
-     "correct":"runs",
-     "wrong":"run",
-     "explanation":"One sister = singular, so we use runs."},
+<head>
 
-    {"sentence":"The birds ____ in the sky.",
-     "correct":"fly",
-     "wrong":"flies",
-     "explanation":"Many birds = plural, so we use fly."},
-
-    {"sentence":"Dad ____ coffee.",
-     "correct":"drinks",
-     "wrong":"drink",
-     "explanation":"One dad = singular, so we use drinks."},
-
-    {"sentence":"The children ____ to school.",
-     "correct":"walk",
-     "wrong":"walks",
-     "explanation":"Children means many people, so we use walk."},
-
-    {"sentence":"The monkey ____ bananas.",
-     "correct":"likes",
-     "wrong":"like",
-     "explanation":"One monkey = singular, so we use likes."},
-
-    {"sentence":"The fish ____ together.",
-     "correct":"swim",
-     "wrong":"swims",
-     "explanation":"Many fish = plural, so we use swim."}
-]
-
-# ------------------ SESSION STATE ------------------
-
-if "score" not in st.session_state:
-    st.session_state.score = 0
-
-if "health" not in st.session_state:
-    st.session_state.health = 3
-
-if "level" not in st.session_state:
-    st.session_state.level = 1
-
-if "question" not in st.session_state:
-    st.session_state.question = random.choice(QUESTIONS)
-
-if "feedback" not in st.session_state:
-    st.session_state.feedback = ""
-
-if "answered" not in st.session_state:
-    st.session_state.answered = False
-
-# ------------------ STYLING ------------------
-
-st.markdown("""
 <style>
 
-.stApp{
-background:linear-gradient(180deg,#020024,#090979,#00d4ff);
+body{
+margin:0;
+overflow:hidden;
+background:black;
+font-family:Arial;
 }
 
-.bigtitle{
-text-align:center;
-font-size:50px;
-font-weight:bold;
-color:#FFD700;
+#container{
+position:relative;
+width:100%;
+height:700px;
+background:
+radial-gradient(circle,#091540,#000814);
+overflow:hidden;
 }
 
-.panel{
-background:#14213d;
-padding:15px;
-border-radius:20px;
+#scoreboard{
+position:absolute;
+top:10px;
+left:20px;
 color:white;
 font-size:24px;
-text-align:center;
-}
-
-.question{
-background:#ffffff;
-padding:25px;
-border-radius:20px;
-font-size:30px;
 font-weight:bold;
-text-align:center;
+z-index:100;
 }
 
-.feedback{
-background:#fff3cd;
-padding:15px;
-border-radius:15px;
-font-size:22px;
+#question{
+position:absolute;
+top:60px;
+left:50%;
+transform:translateX(-50%);
+font-size:34px;
+color:#FFD700;
+font-weight:bold;
+z-index:100;
 }
 
 .alien{
-font-size:90px;
-text-align:center;
+position:absolute;
+font-size:70px;
+cursor:pointer;
+transition:0.2s;
 }
 
-.ship{
+.label{
+font-size:28px;
+background:#111;
+border:3px solid lime;
+padding:5px 15px;
+border-radius:10px;
+color:white;
+}
+
+#ship{
+position:absolute;
+bottom:30px;
+left:50%;
+transform:translateX(-50%);
+font-size:90px;
+}
+
+.laser{
+position:absolute;
+width:6px;
+height:40px;
+background:red;
+box-shadow:0 0 20px yellow;
+}
+
+.explosion{
+position:absolute;
 font-size:100px;
+animation:boom 0.7s forwards;
+}
+
+@keyframes boom{
+
+0%{
+transform:scale(0.5);
+opacity:1;
+}
+
+100%{
+transform:scale(2);
+opacity:0;
+}
+
+}
+
+#feedback{
+
+position:absolute;
+
+bottom:140px;
+
+width:100%;
+
 text-align:center;
+
+font-size:30px;
+
+font-weight:bold;
+
+color:white;
+
+}
+
+#explanation{
+
+position:absolute;
+
+bottom:90px;
+
+width:100%;
+
+text-align:center;
+
+font-size:24px;
+
+color:#00ffcc;
+
 }
 
 </style>
-""", unsafe_allow_html=True)
 
-# ------------------ HEADER ------------------
+</head>
 
-st.markdown(
-'<div class="bigtitle">🚀 Grammar Space Invaders 👾</div>',
-unsafe_allow_html=True
+<body>
+
+<div id="container">
+
+<div id="scoreboard">
+
+⭐ Score: <span id="score">0</span>
+
+&nbsp;&nbsp;&nbsp;
+
+❤️ Lives: <span id="lives">3</span>
+
+</div>
+
+<div id="question"></div>
+
+<div id="feedback"></div>
+
+<div id="explanation"></div>
+
+<div id="ship">🚀</div>
+
+</div>
+
+<script>
+
+const questions=[
+
+{
+sentence:"The dogs ____ in the park.",
+correct:"run",
+wrong:"runs",
+explanation:"Many dogs = plural, so we use run."
+},
+
+{
+sentence:"The cat ____ on the sofa.",
+correct:"sits",
+wrong:"sit",
+explanation:"One cat = singular, so we use sits."
+},
+
+{
+sentence:"Dad ____ coffee.",
+correct:"drinks",
+wrong:"drink",
+explanation:"One dad = singular, so we use drinks."
+},
+
+{
+sentence:"The children ____ to school.",
+correct:"walk",
+wrong:"walks",
+explanation:"Children means many, so use walk."
+},
+
+{
+sentence:"My sister ____ very fast.",
+correct:"runs",
+wrong:"run",
+explanation:"One sister = singular, so use runs."
+}
+
+];
+
+let score=0;
+
+let lives=3;
+
+const container=document.getElementById("container");
+
+function nextQuestion(){
+
+if(lives<=0){
+
+container.innerHTML=`
+<h1 style='color:red;
+text-align:center;
+padding-top:200px;'>
+
+👾 GAME OVER
+
+<br><br>
+
+⭐ Score ${score}
+
+</h1>
+`;
+
+return;
+}
+
+document.getElementById("feedback").innerHTML="";
+
+document.getElementById("explanation").innerHTML="";
+
+document.querySelectorAll(".alienbox").forEach(e=>e.remove());
+
+const q=questions[Math.floor(Math.random()*questions.length)];
+
+document.getElementById("question").innerHTML=q.sentence;
+
+let answers=[q.correct,q.wrong];
+
+answers.sort(()=>Math.random()-0.5);
+
+answers.forEach((answer,index)=>{
+
+let box=document.createElement("div");
+
+box.className="alienbox";
+
+box.style.position="absolute";
+
+box.style.left=(25+index*40)+"%";
+
+box.style.top="180px";
+
+box.style.textAlign="center";
+
+box.style.cursor="pointer";
+
+box.innerHTML=`
+
+<div class='alien'>👾</div>
+
+<div class='label'>${answer}</div>
+
+`;
+
+container.appendChild(box);
+
+box.onclick=function(){
+
+shoot(box,answer,q);
+
+};
+
+});
+
+}
+
+function shoot(target,answer,q){
+
+let laser=document.createElement("div");
+
+laser.className="laser";
+
+laser.style.left="50%";
+
+laser.style.bottom="120px";
+
+container.appendChild(laser);
+
+let endY=420;
+
+let position=120;
+
+let animation=setInterval(()=>{
+
+position+=15;
+
+laser.style.bottom=position+"px";
+
+if(position>=endY){
+
+clearInterval(animation);
+
+laser.remove();
+
+explode(target,answer,q);
+
+}
+
+},20);
+
+}
+
+function explode(target,answer,q){
+
+const rect=target.getBoundingClientRect();
+
+let explosion=document.createElement("div");
+
+explosion.className="explosion";
+
+explosion.innerHTML="💥";
+
+explosion.style.left=target.offsetLeft+"px";
+
+explosion.style.top=target.offsetTop+"px";
+
+container.appendChild(explosion);
+
+target.remove();
+
+setTimeout(()=>{
+
+explosion.remove();
+
+},700);
+
+if(answer===q.correct){
+
+score+=10;
+
+document.getElementById("feedback").innerHTML="🎉 Great Shot!";
+
+}
+
+else{
+
+lives-=1;
+
+document.getElementById("feedback").innerHTML="😄 Nice Try!";
+
+}
+
+document.getElementById("explanation").innerHTML=q.explanation;
+
+document.getElementById("score").innerHTML=score;
+
+document.getElementById("lives").innerHTML=lives;
+
+setTimeout(()=>{
+
+nextQuestion();
+
+},2500);
+
+}
+
+nextQuestion();
+
+</script>
+
+</body>
+
+</html>
+
+"""
+
+components.html(
+    html_code,
+    height=750
 )
-
-st.write("")
-
-col1,col2,col3=st.columns(3)
-
-with col1:
-    st.markdown(
-    f'<div class="panel">⭐ Score<br>{st.session_state.score}</div>',
-    unsafe_allow_html=True
-    )
-
-with col2:
-    st.markdown(
-    f'<div class="panel">❤️ Health<br>{st.session_state.health}</div>',
-    unsafe_allow_html=True
-    )
-
-with col3:
-    st.markdown(
-    f'<div class="panel">🏆 Level<br>{st.session_state.level}</div>',
-    unsafe_allow_html=True
-    )
-
-st.write("")
-
-# ------------------ GAME OVER ------------------
-
-if st.session_state.health <= 0:
-
-    st.error("👾 GAME OVER!")
-
-    st.subheader(f"Final Score: {st.session_state.score}")
-
-    if st.button("🔄 Play Again"):
-
-        st.session_state.score=0
-        st.session_state.health=3
-        st.session_state.level=1
-        st.session_state.question=random.choice(QUESTIONS)
-        st.session_state.feedback=""
-        st.session_state.answered=False
-
-        st.rerun()
-
-    st.stop()
-
-# ------------------ ALIEN ------------------
-
-st.markdown(
-'<div class="alien">👾</div>',
-unsafe_allow_html=True
-)
-
-q=st.session_state.question
-
-st.markdown(
-f'<div class="question">{q["sentence"]}</div>',
-unsafe_allow_html=True
-)
-
-st.write("")
-
-answers=[q["correct"],q["wrong"]]
-
-random.shuffle(answers)
-
-left,right=st.columns(2)
-
-# ------------------ SHOOT BUTTONS ------------------
-
-if not st.session_state.answered:
-
-    with left:
-
-        if st.button(f"🔫 Shoot {answers[0]}",
-                     use_container_width=True):
-
-            selected=answers[0]
-
-            st.session_state.answered=True
-
-            if selected==q["correct"]:
-
-                st.session_state.score +=10
-
-                st.session_state.feedback=(
-                    f"🎉 Alien destroyed!\n\n💡 {q['explanation']}"
-                )
-
-            else:
-
-                st.session_state.health -=1
-
-                st.session_state.feedback=(
-                    f"😃 Oops!\n\nCorrect answer: {q['correct']}\n\n💡 {q['explanation']}"
-                )
-
-            st.rerun()
-
-    with right:
-
-        if st.button(f"🔫 Shoot {answers[1]}",
-                     use_container_width=True):
-
-            selected=answers[1]
-
-            st.session_state.answered=True
-
-            if selected==q["correct"]:
-
-                st.session_state.score +=10
-
-                st.session_state.feedback=(
-                    f"🎉 Alien destroyed!\n\n💡 {q['explanation']}"
-                )
-
-            else:
-
-                st.session_state.health -=1
-
-                st.session_state.feedback=(
-                    f"😃 Oops!\n\nCorrect answer: {q['correct']}\n\n💡 {q['explanation']}"
-                )
-
-            st.rerun()
-
-# ------------------ FEEDBACK ------------------
-
-if st.session_state.answered:
-
-    st.markdown(
-    f'<div class="feedback">{st.session_state.feedback}</div>',
-    unsafe_allow_html=True
-    )
-
-    if st.session_state.score > 0 and st.session_state.score % 30 == 0:
-        st.session_state.level += 1
-        st.balloons()
-
-    st.write("")
-
-    st.markdown(
-    '<div class="ship">🚀</div>',
-    unsafe_allow_html=True
-    )
-
-    if st.button("➡️ Next Alien"):
-
-        st.session_state.question=random.choice(QUESTIONS)
-
-        st.session_state.feedback=""
-
-        st.session_state.answered=False
-
-        st.rerun()
-
-# ------------------ INSTRUCTIONS ------------------
-
-st.write("---")
-
-st.info("""
-
-🎮 HOW TO PLAY
-
-👾 Aliens are attacking Earth.
-
-🚀 Read the sentence.
-
-🔫 Shoot the correct verb.
-
-⭐ Correct answer = +10 points
-
-❤️ Wrong answer = lose 1 health
-
-🏆 Every 30 points = Level Up
-
-Destroy as many aliens as you can!
-
-""")
