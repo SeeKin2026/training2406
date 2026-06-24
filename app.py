@@ -67,17 +67,17 @@ QUESTIONS = [
     },
 
     {
-        "sentence": "My sister and I ____ in the pool.",
+        "sentence": "The fish ____ in the pond.",
         "options": ["swim", "swims"],
         "answer": "swim",
-        "explanation": "My sister and I here means more than 1 person, so we use 'swim'."
+        "explanation": "Fish here means many fish, so we use 'swim'."
     },
 
-
-        "sentence": "My younger brother ____ very fast.",
-        "options": ["run", "run"],
+    {
+        "sentence": "My sister ____ very fast.",
+        "options": ["run", "runs"],
         "answer": "runs",
-        "explanation": "My younger brother = singular, so we use 'runs'."
+        "explanation": "One sister = singular, so we use 'runs'."
     }
 ]
 
